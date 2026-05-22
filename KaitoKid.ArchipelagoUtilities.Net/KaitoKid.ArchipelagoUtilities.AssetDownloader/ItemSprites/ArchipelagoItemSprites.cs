@@ -169,17 +169,17 @@ namespace KaitoKid.ArchipelagoUtilities.AssetDownloader.ItemSprites
         /// <returns>bool - true if the function succeeded, false if failed</returns>
         public bool TryGetCustomAsset(IAssetLocation scoutedLocation, string myGameName, bool fallbackOnDifferentGameAsset, bool fallbackOnGenericGameAsset, out ItemSprite sprite)
         {
-            _assetService.TryDownloadGameAssets(myGameName, this, true);
+            var myGame = _nameCleaner.CleanName(myGameName);
+            _assetService.TryDownloadGameAssets(myGame, this, true);
             sprite = null;
             if (scoutedLocation == null)
             {
                 return false;
             }
 
-            _assetService.TryDownloadGameAssets(scoutedLocation.GameName, this, true);
-
-            var myGame = _nameCleaner.CleanName(myGameName);
             var game = _nameCleaner.CleanName(scoutedLocation.GameName);
+            _assetService.TryDownloadGameAssets(game, this, true);
+
             var item = _nameCleaner.CleanName(scoutedLocation.ItemName);
             if (_spritesByGameByItemName.TryGetValue(game, out var itemsInCorrectGame))
             {

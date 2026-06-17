@@ -1,0 +1,1 @@
+Peggle Deluxe sprites created and provided by Ellie53

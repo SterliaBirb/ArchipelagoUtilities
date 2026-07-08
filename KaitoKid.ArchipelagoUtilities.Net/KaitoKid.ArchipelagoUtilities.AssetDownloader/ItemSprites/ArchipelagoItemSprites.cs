@@ -169,21 +169,23 @@ namespace KaitoKid.ArchipelagoUtilities.AssetDownloader.ItemSprites
         /// <returns>bool - true if the function succeeded, false if failed</returns>
         public bool TryGetCustomAsset(IAssetLocation scoutedLocation, string myGameName, bool fallbackOnDifferentGameAsset, bool fallbackOnGenericGameAsset, out ItemSprite sprite)
         {
-            _assetService.TryDownloadGameAssets(myGameName, this, true);
+            var myGame = _nameCleaner.RemoveIllegalCharacters(myGameName);
+            _assetService.TryDownloadGameAssets(myGame, this, true);
             sprite = null;
             if (scoutedLocation == null)
             {
                 return false;
             }
 
-            _assetService.TryDownloadGameAssets(scoutedLocation.GameName, this, true);
+            var game = _nameCleaner.RemoveIllegalCharacters(scoutedLocation.GameName);
+            _assetService.TryDownloadGameAssets(game, this, true);
 
-            var myGame = _nameCleaner.CleanName(myGameName);
-            var game = _nameCleaner.CleanName(scoutedLocation.GameName);
-            var item = _nameCleaner.CleanName(scoutedLocation.ItemName);
-            if (_spritesByGameByItemName.TryGetValue(game, out var itemsInCorrectGame))
+            var cleanMyGame = _nameCleaner.CleanName(myGameName);
+            var cleanScoutedGame = _nameCleaner.CleanName(scoutedLocation.GameName);
+            var cleanItem = _nameCleaner.CleanName(scoutedLocation.ItemName);
+            if (_spritesByGameByItemName.TryGetValue(cleanMyGame, out var itemsInCorrectGame))
             {
-                if (itemsInCorrectGame.TryGetValue(item, out sprite))
+                if (itemsInCorrectGame.TryGetValue(cleanItem, out sprite))
                 {
                     return true;
                 }
@@ -191,15 +193,15 @@ namespace KaitoKid.ArchipelagoUtilities.AssetDownloader.ItemSprites
 
             // _assetService.TryDownloadAsset(scoutedLocation.GameName, scoutedLocation.ItemName, this);
 
-            if (fallbackOnDifferentGameAsset && _spritesByGameByItemName.TryGetValue(myGame, out var itemsInMyGame))
+            if (fallbackOnDifferentGameAsset && _spritesByGameByItemName.TryGetValue(cleanMyGame, out var itemsInMyGame))
             {
-                if (itemsInMyGame.TryGetValue(item, out sprite))
+                if (itemsInMyGame.TryGetValue(cleanItem, out sprite))
                 {
                     return true;
                 }
             }
 
-            if (fallbackOnDifferentGameAsset && _spritesByItemName.TryGetValue(item, out var spritesWithCorrectName) && spritesWithCorrectName.Any())
+            if (fallbackOnDifferentGameAsset && _spritesByItemName.TryGetValue(cleanItem, out var spritesWithCorrectName) && spritesWithCorrectName.Any())
             {
                 var random = new Random(scoutedLocation.GetSeed());
                 var index = random.Next(0, spritesWithCorrectName.Count);
@@ -207,7 +209,7 @@ namespace KaitoKid.ArchipelagoUtilities.AssetDownloader.ItemSprites
                 return true;
             }
 
-            if (fallbackOnGenericGameAsset && _spritesByGameByItemName.TryGetValue(game, out itemsInCorrectGame))
+            if (fallbackOnGenericGameAsset && _spritesByGameByItemName.TryGetValue(cleanScoutedGame, out itemsInCorrectGame))
             {
                 if (itemsInCorrectGame.TryGetValue(string.Empty, out sprite))
                 {

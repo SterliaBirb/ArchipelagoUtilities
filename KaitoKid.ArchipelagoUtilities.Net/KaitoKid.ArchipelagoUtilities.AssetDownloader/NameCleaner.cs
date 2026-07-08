@@ -15,8 +15,27 @@ namespace KaitoKid.ArchipelagoUtilities.AssetDownloader
                 return string.Empty;
             }
 
-            var charsToIgnore = new string[] { " ", "_", ":", "'", "<", ">" };
             name = name.ToLower();
+            name = RemoveUncleanCharacters(name);
+            return name;
+        }
+
+        public string RemoveUncleanCharacters(string name)
+        {
+            var charsToIgnore = new string[] { " ", "_", "'", };
+            foreach (var charToIgnore in charsToIgnore)
+            {
+                name = name.Replace(charToIgnore, "");
+            }
+
+            name = RemoveIllegalCharacters(name);
+
+            return name;
+        }
+
+        public string RemoveIllegalCharacters(string name)
+        {
+            var charsToIgnore = new string[] { ":", "<", ">" };
             foreach (var charToIgnore in charsToIgnore)
             {
                 name = name.Replace(charToIgnore, "");

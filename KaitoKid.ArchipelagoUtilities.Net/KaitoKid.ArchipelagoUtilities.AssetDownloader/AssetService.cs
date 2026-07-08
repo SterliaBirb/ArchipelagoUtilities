@@ -53,8 +53,12 @@ namespace KaitoKid.ArchipelagoUtilities.AssetDownloader
             var downloadedNewZip = false;
             if (!hasZip)
             {
-                hasZip = _downloader.DownloadGameZip(gameName);
-                downloadedNewZip = true;
+                var success = _downloader.DownloadGameZip(gameName);
+                if (success)
+                {
+                    hasZip = true;
+                    downloadedNewZip = true;
+                }
             }
 
             var gamePath = Path.Combine(Paths.CustomAssetsDirectory, $"{gameName}");

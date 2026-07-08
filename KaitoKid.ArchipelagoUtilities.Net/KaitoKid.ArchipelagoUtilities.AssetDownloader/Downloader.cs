@@ -78,6 +78,7 @@ namespace KaitoKid.ArchipelagoUtilities.AssetDownloader
 
         private static bool DownloadFile(string originPath, string destinationPath)
         {
+            var fileAlreadyExists = File.Exists(destinationPath);
             try
             {
                 if (!Directory.Exists(Paths.CustomAssetsDirectory))
@@ -93,6 +94,10 @@ namespace KaitoKid.ArchipelagoUtilities.AssetDownloader
             }
             catch (Exception ex)
             {
+                if (!fileAlreadyExists && File.Exists(destinationPath))
+                {
+                    File.Delete(destinationPath);
+                }
                 return false;
             }
         }
